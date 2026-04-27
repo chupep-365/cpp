@@ -108,13 +108,13 @@ std::string toupper(std::string str) {                                 // transf
 }
 
 __wrd* top_longest(__wrd* arr, u_int32_t arr_size, u_int32_t k) {       // create array of k longest palindromes 
-    u_int32_t arr_max_index{};                                          
-    for(size_t i{0}; i < arr_size - 1; ++i) {                           
+    u_int32_t arr_max_index{};                           
+    for(size_t i{0}; i < arr_size - 1; ++i) {
         arr_max_index = i;
         for(size_t j{i + 1}; j < arr_size; ++j) {
             if(arr[j].wrd_size > arr[arr_max_index].wrd_size) {         // used simple sorting algorithms
                 arr_max_index = j;                                      // cuz im a bit lazy
-            } 
+            }
         }
         if(arr_max_index != i) {
             std::swap(arr[i], arr[arr_max_index]);
