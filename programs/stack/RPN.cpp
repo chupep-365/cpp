@@ -8,13 +8,14 @@
 TNT 
 struct Stack
 {
+    T* st{nullptr};
     size_t size{};
     size_t top{};
-    T* st{nullptr};
+    float resize_factor{};
 };
 
 TNT
-void init(Stack<T>&, size_t);
+void init(Stack<T>&, const size_t&, const float&);
 
 TNT
 void clear(Stack<T>&);
@@ -23,7 +24,7 @@ TNT
 bool is_empty(const Stack<T>&);
 
 TNT
-void push(Stack<T>&, T);
+void push(Stack<T>&, const T&);
 
 TNT
 T pop(Stack<T>&);
@@ -36,19 +37,26 @@ std::string RPN(const std::string&);
 int16_t alpha_prior(const std::string&);
 double RPN_calculate(const std::string&);
 
+TNT 
+void resize(Stack<T>&, const size_t&);
+
 
 int main() {
-    std::string string{"25 + 17 * ( 67 - 76 ) ^ 2"}; // 25 17 67 76 - 2 ^ * +
-    //std::string string{"( ( 2 + 3 ) * 4 - 5 ) / 6"}; // 2 3 + 4 * 5 - 6 /
+    //std::string string{"25 + 17 * ( 67 - 76 ) ^ 2"}; // 25 17 67 76 - 2 ^ * +
+    std::string string{"( ( 2 + 3 ) * 4 - 5 ) / ( 6 - 4 ) ^ 2"}; // 2 3 + 4 * 5 - 6 4 - 2 ^ /
     //std::string string{"2 ^ 3 ^ 2"}; // 2 3 2 ^ ^
     std::cout << '\n' << RPN(string) << '\n';
     std::cout << "result: " << RPN_calculate(RPN(string));
 }
 
 TNT
-void init(Stack<T>& stack, size_t size) {
+void init(Stack<T>& stack, const size_t& size, const float& factor) {
     stack.size = size;
     stack.top = 0;
+    if(factor < 1) {
+        return;
+    }
+    stack.resize_factor = factor;
     stack.st = new T[size];
 }
 
@@ -60,23 +68,24 @@ void clear(Stack<T>& stack) {
     stack.st = nullptr;
 }
 
-
 TNT
 bool is_empty(const Stack<T>& stack) {
     return stack.top == 0;
 }
 
 TNT
-void push(Stack<T>& stack, T elmnt) {
-    if(stack.top != stack.size) {
-        stack.st[stack.top++] = elmnt;
+void push(Stack<T>& stack, const T& elmnt) {
+    if(stack.top == stack.size) {
+        size_t new_size = stack.size * stack.resize_factor;
+        resize(stack, new_size);
     }
+    stack.st[stack.top++] = elmnt;
 }
 
 TNT
 T pop(Stack<T>& stack) {
     if(is_empty(stack)) {
-        throw "err";
+        throw "Errrrr...";
     }
     return stack.st[--stack.top];
 }
@@ -114,7 +123,7 @@ std::string* tokenize(const std::string& str) {
 std::string RPN(const std::string& str) {
     size_t tkns = tkns_mnt(str);
     Stack<std::string> stack;
-    init(stack, tkns);
+    init(stack, 2, 1.5f);
     std::string* tkn_arr = tokenize(str);
     std::string out{""};
     for(size_t i{0}; i < tkns; ++i) {
@@ -164,7 +173,7 @@ int16_t alpha_prior(const std::string& alpha) {
 double RPN_calculate(const std::string& str) {
     size_t tkns = tkns_mnt(str);
     Stack<double> stack;
-    init(stack, tkns);
+    init(stack, 2, 1.5f);
     std::string* tkn_arr = tokenize(str);
     double temp1{0};
     double temp2{0};
@@ -207,4 +216,22 @@ double RPN_calculate(const std::string& str) {
     temp1 = pop(stack);
     clear(stack);
     return temp1;
+}
+
+TNT 
+void resize(Stack<T>& stack, const size_t& new_size) {
+    if(stack.size == new_size) {
+        return;
+    }
+    size_t tocopy = std::min(stack.size, new_size);
+    T* arr_buff = new T[new_size];
+    for(size_t i{0}; i < tocopy; ++i) {
+        arr_buff[i] = stack.st[i];
+    }
+    delete[] stack.st;
+    stack.size = new_size;
+    stack.st = arr_buff;
+    if(stack.top > new_size) {
+        stack.top = new_size;
+    }
 }
