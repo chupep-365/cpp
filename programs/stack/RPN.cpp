@@ -42,9 +42,10 @@ void resize(Stack<T>&, const size_t&);
 
 
 int main() {
-    //std::string string{"25 + 17 * ( 67 - 76 ) ^ 2"}; // 25 17 67 76 - 2 ^ * +
-    std::string string{"( ( 2 + 3 ) * 4 - 5 ) / ( 6 - 4 ) ^ 2"}; // 2 3 + 4 * 5 - 6 4 - 2 ^ /
+    //std::string string{"25 + 17 * ( 67 - 76 ) ^ 2"}; // 25 17 67 76 - 2 ^ * +  = 1402
+    //std::string string{"( ( 2 + 3 ) * 4 - 5 ) / ( 6 - 4 ) ^ 2"}; // 2 3 + 4 * 5 - 6 4 - 2 ^ /   = 3.75
     //std::string string{"2 ^ 3 ^ 2"}; // 2 3 2 ^ ^
+    std::string string{"3 + sin ( 2 * 4 ) * cos ( 5 )"}; // 3 2 4 * sin 5 cos * + 
     std::cout << '\n' << RPN(string) << '\n';
     std::cout << "result: " << RPN_calculate(RPN(string));
 }
@@ -131,7 +132,7 @@ std::string RPN(const std::string& str) {
             out = out + tkn_arr[i] + ' ';
             continue;
         }
-        if(tkn_arr[i] == "(") {
+        if(tkn_arr[i] == "(" || tkn_arr[i] == "sin" || tkn_arr[i] == "cos") {
             push(stack, tkn_arr[i]);
             continue;
         }
@@ -157,6 +158,9 @@ std::string RPN(const std::string& str) {
 int16_t alpha_prior(const std::string& alpha) {
     if((alpha.size() >= 2 && (alpha[0] == '-' || (alpha[0] >= '0' && alpha[0] <= '9'))) || (alpha[0] >= '0' && alpha[0] <= '9')) {
         return -1;
+    }
+    if((alpha.size() > 2) && (alpha == "sin" || alpha == "cos")){
+        return 10;
     }
     if(alpha == "+" || alpha == "-") {
         return 1;
@@ -210,6 +214,16 @@ double RPN_calculate(const std::string& str) {
             temp1 = pop(stack);
             temp2 = pop(stack);
             push(stack, std::pow(temp2, temp1));
+            continue;
+        }
+        if(tkn_arr[i] == "sin") {
+            temp1 = pop(stack);
+            push(stack, sin(temp1));
+            continue;
+        }
+        if(tkn_arr[i] == "cos") {
+            temp1 = pop(stack);
+            push(stack, cos(temp1));
             continue;
         }
     }
