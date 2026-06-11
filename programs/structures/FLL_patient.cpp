@@ -33,7 +33,6 @@ template <class T>
 bool empty(const Priority_queue<T>&);
 
 u_int32_t patient_prior(const Patient&);
-
 void input(Patient&);
 void output(const Patient&);
 
