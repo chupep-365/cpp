@@ -86,7 +86,9 @@ T pop(Priority_queue<T>& pq) {
     Node<T>* temp = pq.top;
     T obj = temp->obj;
     pq.top = temp->next;
-    pq.top->prev = nullptr;
+    if(pq.top != nullptr) {
+        pq.top->prev = nullptr;
+    }
     delete temp;
     return obj;
 }
