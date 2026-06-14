@@ -24,8 +24,8 @@ u_int32_t func();
 
 int main() {
     Priority_queue<std::string> prior_q;
-    push(prior_q, (std::string)"First");
-    push(prior_q, (std::string)"Second");
+    push(prior_q, (std::string)"First");    // for tests
+    push(prior_q, (std::string)"Second");   
     pop(prior_q);
     push(prior_q, (std::string)"Third");
     push(prior_q, (std::string)"Fourth");

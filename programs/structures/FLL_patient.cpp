@@ -135,7 +135,7 @@ void output(const Patient& obj) {
     std::string state{};
     switch (obj.state)
     {
-    case State::CRITICAL:
+    case State::CRITICAL :
         state = "CRITICAL";
         break;
     case State::HARD :
