@@ -60,7 +60,7 @@ void push(Priority_queue<T>& pq, const T& obj, u_int32_t (*prior_calc)(const T&)
     bool in_between{false};
     Node<T>* new_node = new Node<T>{obj, nullptr, nullptr, priority};
     while(true) {
-        if(temp->prior > new_node->prior) {
+        if(temp->prior >= new_node->prior) {
             if(temp->next != nullptr) {
                 temp = temp->next;
                 in_between = true;
