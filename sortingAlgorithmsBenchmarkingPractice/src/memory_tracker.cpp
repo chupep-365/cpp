@@ -15,7 +15,7 @@ size_t get_peak_memory_bytes() {
     return peak_heap.load();
 }
 
-// Перегрузка new
+// перегрузка new
 void* operator new(size_t size) {
     void* raw = malloc(size + sizeof(size_t));
     if (!raw) throw std::bad_alloc();
@@ -28,7 +28,7 @@ void* operator new(size_t size) {
     return ptr;
 }
 
-// Перегрузка delete
+// перегрузка delete
 void operator delete(void* ptr) noexcept {
     if (!ptr) return;
     void* raw = static_cast<char*>(ptr) - sizeof(size_t);
@@ -37,11 +37,11 @@ void operator delete(void* ptr) noexcept {
     free(raw);
 }
 
-// Перегрузки для массивов
+// перегрузки для массивов
 void* operator new[](size_t size) { return operator new(size); }
 void operator delete[](void* ptr) noexcept { operator delete(ptr); }
 
-// Перегрузки C++14 с указанием размера (sized deallocation)
+// перегрузки C++14 с указанием размера (sized deallocation)
 void operator delete(void* ptr, size_t size) noexcept {
     if (!ptr) return;
     current_heap -= size;

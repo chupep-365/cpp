@@ -81,19 +81,27 @@ size_t partition_quicksort_naive(std::vector<uint32_t>& arr, size_t low, size_t 
     return i;
 }
 
+// специально обрабатывается меньшая часть чтобы избежать stack overflow при n > 50000
+// при этом сохранена деградация временной сложности до n^2
 void quicksort_naive_recursion(std::vector<uint32_t>& arr, size_t low, size_t high, size_t depth) {
-    if(depth > max_recursion_depth) {
-        max_recursion_depth = depth;
-    }
-    if(low >= high) {
-        return;
-    }
-    const size_t pivot_index = partition_quicksort_naive(arr, low, high);
-    if(pivot_index > low) {
-        quicksort_naive_recursion(arr, low, pivot_index - 1, depth + 1);
-    }
-    if(pivot_index < high) {
-        quicksort_naive_recursion(arr, pivot_index + 1, high, depth + 1);
+    while(low < high) {
+        if(depth > max_recursion_depth) {
+            max_recursion_depth = depth;
+        }
+        const size_t pivot_index = partition_quicksort_naive(arr, low, high);
+        size_t left_size = pivot_index - low;
+        size_t right_size = high - pivot_index;
+        if(left_size < right_size) {
+            if(pivot_index > low) {
+                quicksort_naive_recursion(arr, low, pivot_index - 1, depth + 1);
+            }
+            low = pivot_index + 1;
+        } else {
+            if(pivot_index < high) {
+                quicksort_naive_recursion(arr, pivot_index + 1, high, depth + 1);
+            }
+            high = pivot_index - 1;
+        }
     }
 }
 

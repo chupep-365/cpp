@@ -279,8 +279,8 @@ size_t get_repeats(size_t size) {
     return 3;
 }
 
-// тесты корректности
-
+// функция для получения имени исполняемого файла, который создается при проведении бенчмарка
+// используется в дальнейшем для создания файла basename.csv, куда будут выводится результаты
 std::string get_base_name(const std::string& path) {
     size_t slash_pos = path.find_last_of("/\\");
     if (slash_pos == std::string::npos) {
@@ -292,7 +292,7 @@ std::string get_base_name(const std::string& path) {
 // бенчмарк
 
 void run_benchmark_all(std::ostream& output) {
-    const size_t sizes[] = {10, 500, 1000, 50000, 1000000};
+    const size_t sizes[] = {10, 500, 1000, 50000, 250000, 500000, 1000000};
     const arr_type types[] = {
         arr_type::RANDOM,
         arr_type::SORTED,
@@ -300,32 +300,29 @@ void run_benchmark_all(std::ostream& output) {
         arr_type::ALMOST_SORTED
     };
     std::vector<SortDescriptor> sorts = get_sort_descriptors();
-    // заголовок CSV
+    // заголовок .csv
     output << "algorithm,size,data_type,median_ms,min_ms,max_ms,"
            << "recursion_depth,peak_heap_bytes,estimated_stack_bytes,total_memory_bytes\n";
-    for(size_t i{0}; i < 5; ++i) {
+    for(size_t i{0}; i < 7; ++i) {
         const size_t size = sizes[i]; 
         size_t repeats = get_repeats(size);
         for(size_t j{0}; j < 4; ++j) {
             const arr_type type = types[j];
-            // генерируем массив 1 раз для данной комбинации
-            // все алгоритмы и все прогоны работают с одним и тем же массивом
+            // генерируем массив 1 раз для данной комбинации и работаем с его копией
+            // тогда все алгоритмы и все прогоны работают с одним и тем же массивом
             std::vector<uint32_t> source = gen_arr(size, type);
             std::string type_str = array_type_to_string(type);
-            std::cerr << "Benchmarking size = " << size
-                      << " type = " << type_str
-                      << " repeats = " << repeats << "\n";
+            // подсказки во время бенчмарка, выводятся в консоль
+            std::cerr << "Benchmarking size = " << size << " type = " << type_str << " repeats = " << repeats << "\n";
             for(const auto& sort : sorts) {
-                // пропускаем квадратичные сортировки на очень больших размерах
+                // пропущены квадратичные сортировки на очень больших размерах
                 // чтобы не ждать часами.
                 bool is_quadratic = (sort.name == "bubble_sort" ||
                                      sort.name == "selection_sort" ||
                                      sort.name == "insertion_sort" ||
                                      sort.name == "quick_sort_naive");
-                if (size >= 1000000 && is_quadratic &&
-                    (type == arr_type::SORTED || type == arr_type::REVERSE || type == arr_type::RANDOM)) {
-                    std::cerr << "  Skipping " << sort.name
-                              << " (quadratic, size too large)\n";
+                if (size >= 500000 && is_quadratic) {
+                    std::cerr << "  Skipping " << sort.name << " (quadratic, size is too large)\n";
                     continue;
                 }
                 std::cerr << "  Running " << sort.name << "...\n";
