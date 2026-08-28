@@ -15,9 +15,9 @@ void bubble_sort(std::vector<uint32_t>& arr) {
         return;
     }
     const size_t size = arr.size();
-    for(size_t i = 0; i < size - 1; ++i) {
+    for(size_t i{0}; i < size - 1; ++i) {
         bool swapped = false;
-        for(size_t j = 0; j < size - 1 - i; ++j) {
+        for(size_t j{0}; j < size - 1 - i; ++j) {
             if(arr[j] > arr[j + 1]) {
                 std::swap(arr[j], arr[j + 1]);
                 swapped = true;
@@ -36,9 +36,9 @@ void selection_sort(std::vector<uint32_t>& arr) {
         return;
     }
     const size_t size = arr.size();
-    for(size_t i = 0; i < size - 1; ++i) {
+    for(size_t i{0}; i < size - 1; ++i) {
         size_t min_index = i;
-        for(size_t j = i + 1; j < size; ++j) {
+        for(size_t j ={i + 1}; j < size; ++j) {
             if (arr[j] < arr[min_index]) {
                 min_index = j;
             }
@@ -56,7 +56,7 @@ void insertion_sort(std::vector<uint32_t>& arr) {
         return;
     }
     const size_t size = arr.size();
-    for(std::size_t i = 1; i < size; ++i) {
+    for(size_t i{1}; i < size; ++i) {
         const uint32_t key = arr[i];
         size_t j = i;
         while(j > 0 && arr[j - 1] > key) {
@@ -71,7 +71,7 @@ void insertion_sort(std::vector<uint32_t>& arr) {
 size_t partition_quicksort_naive(std::vector<uint32_t>& arr, size_t low, size_t high) {
     const uint32_t pivot = arr[high];
     size_t i = low;
-    for(size_t j = low; j < high; ++j) {
+    for(size_t j{low}; j < high; ++j) {
         if(arr[j] <= pivot) {
             std::swap(arr[i], arr[j]);
             ++i;
@@ -102,7 +102,7 @@ size_t partition_quicksort_improved(std::vector<uint32_t>& arr, size_t low, size
     std::swap(arr[mid], arr[high]);
     const uint32_t pivot = arr[high];
     size_t i = low;
-    for(size_t j = low; j < high; ++j) {
+    for(size_t j{low}; j < high; ++j) {
         if(arr[j] <= pivot) {
             std::swap(arr[i], arr[j]);
             ++i;
@@ -181,7 +181,7 @@ void mergesort_naive_recursion(std::vector<uint32_t>& arr, size_t left, size_t r
         ++j;
         ++k;
     }
-    for(size_t q = 0; q < segment_size; ++q) {
+    for(size_t q{0}; q < segment_size; ++q) {
         arr[left + q] = tmp[q];
     }
 }
@@ -211,7 +211,7 @@ void merge_arrays(std::vector<uint32_t>& arr, size_t left, size_t mid, size_t ri
         ++j;
         ++k;
     }
-    for(size_t q = left; q <= right; ++q) {
+    for(size_t q{left}; q <= right; ++q) {
         arr[q] = tmp[q];
     }
 }
@@ -294,10 +294,10 @@ void heap_sort_iterative(std::vector<uint32_t>& arr) {
     if(size < 2) {
         return;
     }
-    for(size_t start = size / 2; start > 0; --start) {
+    for(size_t start{size / 2}; start > 0; --start) {
         heap_siftdown_iterative(arr, start - 1, size - 1);
     }
-    for(size_t end = size - 1; end > 0; --end) {
+    for(size_t end{size - 1}; end > 0; --end) {
         std::swap(arr[0], arr[end]);
         heap_siftdown_iterative(arr, 0, end - 1);
     }
@@ -309,10 +309,10 @@ void heap_sort_recursive(std::vector<uint32_t>& arr) {
     if (size < 2) {
         return;
     }
-    for(size_t start = size / 2; start > 0; --start) {
+    for(size_t start{size / 2}; start > 0; --start) {
         heap_siftdown_recursive(arr, start - 1, size - 1, 1);
     }
-    for(size_t end = size - 1; end > 0; --end) {
+    for(size_t end{size - 1}; end > 0; --end) {
         std::swap(arr[0], arr[end]);
         heap_siftdown_recursive(arr, 0, end - 1, 1);
     }
@@ -327,13 +327,14 @@ void counting_sort(std::vector<uint32_t>& arr) {
     }
     const uint32_t max_value = *std::max_element(arr.begin(), arr.end());
     std::vector<size_t> count(static_cast<size_t>(max_value) + 1, 0);
-    for(const uint32_t x : arr) {
+    for(size_t j{0}; j < arr.size(); ++j) {
+        const uint32_t x = arr[j];
         ++count[static_cast<size_t>(x)];
     }
     size_t write_index = 0;
-    for(size_t i = 0; i <= max_value; ++i) {
+    for(size_t i{0}; i <= max_value; ++i) {
         const size_t c = count[static_cast<size_t>(i)];
-        for(size_t j = 0; j < c; ++j) {
+        for(size_t j{0}; j < c; ++j) {
             arr[write_index] = static_cast<uint32_t>(i);
             ++write_index;
         }
@@ -348,18 +349,20 @@ void radix_sort(std::vector<uint32_t>& arr) {
         return;
     }
     std::vector<uint32_t> output(arr.size());
-    for(int shift = 0; shift < 32; shift += 8) {
-        size_t count[256] = {};
-        for(const uint32_t x : arr) {
+    for(int shift{0}; shift < 32; shift += 8) {
+        uint32_t count[256] = {};
+        for(size_t i{0}; i < arr.size(); ++i) {
+            const uint32_t x = arr[i];
             const size_t byte = static_cast<size_t>((x >> shift) & 255U);
             ++count[byte];
         }
-        size_t pos[256];
+        uint32_t pos[256];
         pos[0] = 0;
-        for(int i = 1; i < 256; ++i) {
+        for(int i{1}; i < 256; ++i) {
             pos[i] = pos[i - 1] + count[i - 1];
         }
-        for(const uint32_t x : arr) {
+        for(size_t j{0}; j < arr.size(); ++j) {
+            const uint32_t x = arr[j]; 
             const size_t byte = static_cast<size_t>((x >> shift) & 255U);
             output[pos[byte]] = x;
             ++pos[byte];
@@ -392,7 +395,7 @@ void bucket_sort(std::vector<uint32_t>& arr) {
         bucket_count = 1;
     }
     std::vector<std::vector<uint32_t>> buckets(bucket_count);
-    for(size_t i = 0; i < arr.size(); ++i) {
+    for(size_t i{0}; i < arr.size(); ++i) {
         const uint32_t x = arr[i];
         size_t index = 0;
         if(bucket_count > 1) {
@@ -402,10 +405,10 @@ void bucket_sort(std::vector<uint32_t>& arr) {
         buckets[index].push_back(x);
     }
     size_t write_index = 0;
-    for(size_t i = 0; i < buckets.size(); ++i) {
+    for(size_t i{0}; i < buckets.size(); ++i) {
         std::vector<uint32_t>& bucket = buckets[i];
         insertion_sort(bucket);
-        for(size_t i = 0; i < bucket.size(); ++i) {
+        for(size_t i{0}; i < bucket.size(); ++i) {
             const uint32_t x = bucket[i];
             arr[write_index] = x;
             ++write_index;

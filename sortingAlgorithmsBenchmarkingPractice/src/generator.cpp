@@ -3,7 +3,7 @@
 #include <algorithm> 
 
 uint32_t rand_int(uint32_t min, uint32_t max) {
-    static std::mt19937 gen( std::random_device {}());
+    static std::mt19937 gen(52); // фиксированный сид для честных тестов на разных флагах оптимизации
     std::uniform_int_distribution<uint32_t> dstrb(min, max);
     return dstrb(gen);
 }
@@ -18,11 +18,14 @@ std::vector<uint32_t> gen_arr(size_t size, arr_type type) {
     {
     case arr_type::SORTED:
         return arr;
-    case arr_type::REVERSE:
+    case arr_type::REVERSE: {
+        if(size == 0) {
+            return arr;
+        }
         for(size_t i{size - 1}; i > (size - 1) / 2; --i){
             std::swap(arr[i], arr[size - i - 1]);
         }
-        return arr;
+        return arr; }
     case arr_type::ALMOST_SORTED:
         for(size_t i{0}; i < (size_t)(std::ceil(size * 0.05)); ++i) {
             std::swap(arr[rand_int(0, size - 1)], arr[rand_int(0, size - 1)]);
