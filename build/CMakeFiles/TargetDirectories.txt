@@ -1,3 +1,0 @@
-/home/chupep/cpp/build/CMakeFiles/benchmark.dir
-/home/chupep/cpp/build/CMakeFiles/edit_cache.dir
-/home/chupep/cpp/build/CMakeFiles/rebuild_cache.dir
