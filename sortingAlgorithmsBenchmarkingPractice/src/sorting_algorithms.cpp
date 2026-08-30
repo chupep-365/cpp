@@ -4,16 +4,12 @@
 #include <utility>
 #include <vector>
 #include <cstdint>
-#include <cstddef>
 
 size_t max_recursion_depth = 0;
 
-// BubbleSort
+
 void bubble_sort(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
-    if(arr.size() < 2) {
-        return;
-    }
     const size_t size = arr.size();
     for(size_t i{0}; i < size - 1; ++i) {
         bool swapped = false;
@@ -29,17 +25,13 @@ void bubble_sort(std::vector<uint32_t>& arr) {
     }
 }
 
-// SelectionSort
 void selection_sort(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
-    if(arr.size() < 2) {
-        return;
-    }
     const size_t size = arr.size();
     for(size_t i{0}; i < size - 1; ++i) {
         size_t min_index = i;
-        for(size_t j ={i + 1}; j < size; ++j) {
-            if (arr[j] < arr[min_index]) {
+        for(size_t j{i + 1}; j < size; ++j) {
+            if(arr[j] < arr[min_index]) {
                 min_index = j;
             }
         }
@@ -49,12 +41,8 @@ void selection_sort(std::vector<uint32_t>& arr) {
     }
 }
 
-// InsertionSort
 void insertion_sort(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
-    if(arr.size() < 2) {
-        return;
-    }
     const size_t size = arr.size();
     for(size_t i{1}; i < size; ++i) {
         const uint32_t key = arr[i];
@@ -67,7 +55,11 @@ void insertion_sort(std::vector<uint32_t>& arr) {
     }
 }
 
-// QuickSort
+// QuickSort. Разбит на вспомогательную функцию и функцию рекурсии и собирается воедино оберточной функцией
+// чтобы у всех сортировок был одинаковый набор входных данных
+
+// выбирает в качестве опорного последний элемент подмассива, после чего перемещает все элементы 
+// меньше или равные ему влево, ставит опорный на свое место и возвращает его индекс 
 size_t partition_quicksort_naive(std::vector<uint32_t>& arr, size_t low, size_t high) {
     const uint32_t pivot = arr[high];
     size_t i = low;
@@ -81,6 +73,7 @@ size_t partition_quicksort_naive(std::vector<uint32_t>& arr, size_t low, size_t 
     return i;
 }
 
+// рекурсивно сортирует левую и правую части массиво от опорного элемента
 // специально обрабатывается меньшая часть чтобы избежать stack overflow при n > 50000
 // при этом сохранена деградация временной сложности до n^2
 void quicksort_naive_recursion(std::vector<uint32_t>& arr, size_t low, size_t high, size_t depth) {
@@ -105,6 +98,8 @@ void quicksort_naive_recursion(std::vector<uint32_t>& arr, size_t low, size_t hi
     }
 }
 
+// работает как наивная версия, но перед этим меняет последний и средний элементы местами, чтобы
+// исключить вероятность деградации на почти отсортированных массивах
 size_t partition_quicksort_improved(std::vector<uint32_t>& arr, size_t low, size_t high) {
     const size_t mid = low + (high - low) / 2;
     std::swap(arr[mid], arr[high]);
@@ -139,21 +134,17 @@ void quicksort_improved_recursion(std::vector<uint32_t>& arr, size_t low, size_t
 // QuickSort wrappers
 void quick_sort_naive(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
-    if(arr.size() < 2) {
-        return;
-    }
     quicksort_naive_recursion(arr, 0, arr.size() - 1, 1);
 }
 
 void quick_sort_improved(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
-    if(arr.size() < 2) {
-        return;
-    }
     quicksort_improved_recursion(arr, 0, arr.size() - 1, 1);
 }
 
-// MergeSort 
+// MergeSort. Разбит аналогично QuickSort
+
+// рекурсивно делит массив пополам, затем сливает их в отсортированном порядке
 void mergesort_naive_recursion(std::vector<uint32_t>& arr, size_t left, size_t right, size_t depth) {
     if(depth > max_recursion_depth) {
         max_recursion_depth = depth;
@@ -194,8 +185,8 @@ void mergesort_naive_recursion(std::vector<uint32_t>& arr, size_t left, size_t r
     }
 }
 
-void merge_arrays(std::vector<uint32_t>& arr, size_t left, size_t mid, size_t right,
-                  std::vector<uint32_t>& tmp) {
+// сливает два подмассива в один
+void merge_arrays(std::vector<uint32_t>& arr, size_t left, size_t mid, size_t right, std::vector<uint32_t>& tmp) {
     size_t i = left;
     size_t j = mid + 1;
     size_t k = left;
@@ -224,8 +215,7 @@ void merge_arrays(std::vector<uint32_t>& arr, size_t left, size_t mid, size_t ri
     }
 }
 
-void mergesort_improved_recursion(std::vector<uint32_t>& arr, size_t left, size_t right,
-                                   std::vector<uint32_t>& tmp, size_t depth) {
+void mergesort_improved_recursion(std::vector<uint32_t>& arr, size_t left, size_t right, std::vector<uint32_t>& tmp, size_t depth) {
     if(depth > max_recursion_depth) {
         max_recursion_depth = depth;
     }
@@ -241,24 +231,19 @@ void mergesort_improved_recursion(std::vector<uint32_t>& arr, size_t left, size_
 // MergeSort wrappers
 void merge_sort_improved(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
-    if(arr.size() < 2) {
-        return;
-    }
     std::vector<uint32_t> tmp(arr.size());
     mergesort_improved_recursion(arr, 0, arr.size() - 1, tmp, 1);
 }
 
 void merge_sort_naive(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
-    if(arr.size() < 2) {
-        return;
-    }
     mergesort_naive_recursion(arr, 0, arr.size() - 1, 1);
 }
 
 
-// HeapSort  
+// HeapSort. Итеративная и рекурсивная релизации
 
+// итеративно просеивает элемент вниз по дереву
 void heap_siftdown_iterative(std::vector<uint32_t>& arr, size_t root, size_t end) {
     while(true) {
         size_t child = root * 2 + 1;
@@ -277,7 +262,7 @@ void heap_siftdown_iterative(std::vector<uint32_t>& arr, size_t root, size_t end
     }
 }
 
-
+// то же самое, но рекурсивно
 void heap_siftdown_recursive(std::vector<uint32_t>& arr, size_t root, size_t end, size_t depth) {
     if(depth > max_recursion_depth) {
         max_recursion_depth = depth;
@@ -299,9 +284,6 @@ void heap_siftdown_recursive(std::vector<uint32_t>& arr, size_t root, size_t end
 void heap_sort_iterative(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
     const size_t size = arr.size();
-    if(size < 2) {
-        return;
-    }
     for(size_t start{size / 2}; start > 0; --start) {
         heap_siftdown_iterative(arr, start - 1, size - 1);
     }
@@ -314,9 +296,6 @@ void heap_sort_iterative(std::vector<uint32_t>& arr) {
 void heap_sort_recursive(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
     const size_t size = arr.size();
-    if (size < 2) {
-        return;
-    }
     for(size_t start{size / 2}; start > 0; --start) {
         heap_siftdown_recursive(arr, start - 1, size - 1, 1);
     }
@@ -326,13 +305,8 @@ void heap_sort_recursive(std::vector<uint32_t>& arr) {
     }
 }
 
-// CountingSort
-
 void counting_sort(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
-    if(arr.size() < 2) {
-        return;
-    }
     const uint32_t max_value = *std::max_element(arr.begin(), arr.end());
     std::vector<size_t> count(static_cast<size_t>(max_value) + 1, 0);
     for(size_t j{0}; j < arr.size(); ++j) {
@@ -349,13 +323,8 @@ void counting_sort(std::vector<uint32_t>& arr) {
     }
 }
 
-// RadixSort
-
 void radix_sort(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
-    if(arr.size() < 2) {
-        return;
-    }
     std::vector<uint32_t> output(arr.size());
     for(int shift{0}; shift < 32; shift += 8) {
         uint32_t count[256] = {};
@@ -379,20 +348,15 @@ void radix_sort(std::vector<uint32_t>& arr) {
     }
 }
 
-// BucketSort
-
 void bucket_sort(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;
     const size_t n = arr.size();
-    if(n < 2) {
-        return;
-    }
     const uint32_t min_value = *std::min_element(arr.begin(), arr.end());
     const uint32_t max_value = *std::max_element(arr.begin(), arr.end());
     if(min_value == max_value) {
         return;
     }
-    const size_t range = static_cast<size_t>(max_value) - min_value;
+    const size_t range = static_cast<size_t>(max_value - min_value);
     const size_t range_count = range + 1;
     const size_t max_buckets = 65536;
     size_t bucket_count = std::min(n, max_buckets);
@@ -407,8 +371,7 @@ void bucket_sort(std::vector<uint32_t>& arr) {
         const uint32_t x = arr[i];
         size_t index = 0;
         if(bucket_count > 1) {
-            index = static_cast<size_t>( (static_cast<size_t>(x) - min_value) *(bucket_count - 1) / range
-            );
+            index = static_cast<size_t>( (static_cast<size_t>(x) - min_value) *(bucket_count - 1) / range);
         }
         buckets[index].push_back(x);
     }
@@ -423,8 +386,6 @@ void bucket_sort(std::vector<uint32_t>& arr) {
         }
     }
 }
-
-// Built-in sort
 
 void builtin_sort(std::vector<uint32_t>& arr) {
     max_recursion_depth = 0;

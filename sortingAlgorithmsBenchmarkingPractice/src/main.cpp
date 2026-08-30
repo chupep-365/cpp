@@ -59,7 +59,7 @@ BenchmarkResult run_benchmark(const std::string& name, void (*sort_func)(std::ve
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
         times.push_back(ms);
-        // запоминаем максимальные значения памяти по всем прогонам
+        // запоминаем максимальное значение памяти по всем прогонам
         size_t heap = get_peak_memory_bytes();
         if (heap > max_heap) {
             max_heap = heap;
@@ -74,10 +74,10 @@ BenchmarkResult run_benchmark(const std::string& name, void (*sort_func)(std::ve
     double min_val = times.front();
     double max_val = times.back();
     // рассчитываем потребление памяти стека
-    // для рекурсивных: фрейм обертки + глубина рекурсии * фрейм рекурсии + фрейм помощника
-    // для нерекурсивных: только фрейм обертки
+    // для рекурсивных: фрейм обертки + (глубина рекурсии * фрейм рекурсии) + фрейм помощника
+    // для нерекурсивных: только фрейм основной функции
     size_t stack_bytes = 0;
-    if (frames.is_recursive && max_depth > 0) {
+    if(frames.is_recursive && max_depth > 0) {
         stack_bytes = frames.base_frame + max_depth * frames.recursive_frame + frames.child_frame;
     } else {
         stack_bytes = frames.base_frame;
@@ -97,7 +97,7 @@ BenchmarkResult run_benchmark(const std::string& name, void (*sort_func)(std::ve
     return result;
 }
 
-// таблица сортировок с размерами фреймов
+// таблица размеров фреймов всех используемых функций
 std::vector<SortDescriptor> get_sort_descriptors() {
 #if defined(STACK_PROFILE_GCC_O2)
     // g++ -O2
@@ -226,7 +226,7 @@ std::vector<SortDescriptor> get_sort_descriptors() {
     };
 
 #else
-    // g++ -O0 (по умолчанию, также используется для -O0 -march=native)
+    // g++ -O0 (по умолчанию, также используется для -O0 -march=native (он же march))
     return {
         {"bubble_sort", bubble_sort, {80, 0, 0, false}},
         {"selection_sort", selection_sort, {80, 0, 0, false}},
@@ -280,10 +280,10 @@ size_t get_repeats(size_t size) {
 }
 
 // функция для получения имени исполняемого файла, который создается при проведении бенчмарка
-// используется в дальнейшем для создания файла basename.csv, куда будут выводится результаты
+// используется в дальнейшем для создания файла file_name.csv, куда будут выводится результаты
 std::string get_base_name(const std::string& path) {
     size_t slash_pos = path.find_last_of("/\\");
-    if (slash_pos == std::string::npos) {
+    if(slash_pos == std::string::npos) {
         return path;
     }
     return path.substr(slash_pos + 1);
@@ -300,7 +300,7 @@ void run_benchmark_all(std::ostream& output) {
         arr_type::ALMOST_SORTED
     };
     std::vector<SortDescriptor> sorts = get_sort_descriptors();
-    // заголовок .csv
+    // заголовок result.csv 
     output << "algorithm,size,data_type,median_ms,min_ms,max_ms,"
            << "recursion_depth,peak_heap_bytes,estimated_stack_bytes,total_memory_bytes\n";
     for(size_t i{0}; i < 7; ++i) {
@@ -322,7 +322,7 @@ void run_benchmark_all(std::ostream& output) {
                                      sort.name == "selection_sort" ||
                                      sort.name == "insertion_sort" ||
                                      sort.name == "quick_sort_naive");
-                if (size >= 500000 && is_quadratic) {
+                if(size >= 500000 && is_quadratic) {
                     std::cerr << "  Skipping " << sort.name << " (quadratic, size is too large)\n";
                     continue;
                 }

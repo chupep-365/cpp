@@ -1,9 +1,11 @@
 #include "generator.h"
+
 #include <random>
 #include <algorithm> 
 
+// сид фиксированный для того чтобы массивы не отличались от одного бенчмарка к другому (с разными флагами)
 uint32_t rand_int(uint32_t min, uint32_t max) {
-    static std::mt19937 gen(52); // фиксированный сид для честных тестов на разных флагах оптимизации
+    static std::mt19937 gen(52); 
     std::uniform_int_distribution<uint32_t> dstrb(min, max);
     return dstrb(gen);
 }

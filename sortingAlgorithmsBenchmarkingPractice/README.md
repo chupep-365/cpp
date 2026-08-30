@@ -7,4 +7,4 @@
 | Накопитель | NVMe M.2 2242 PCIe Gen4 SSD 1TB |
 | Версии компиляторов | GCC 14.3, Clang 19.1.7 |
 
-Оперативная система - Linux.
+Оперативная система - Linux. пресет march - -O0 -march=native, пресет native - -O3 -march=native
