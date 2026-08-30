@@ -314,8 +314,9 @@ void run_benchmark_all(std::ostream& output) {
             std::string type_str = array_type_to_string(type);
             // подсказки во время бенчмарка, выводятся в консоль
             std::cerr << "Benchmarking size = " << size << " type = " << type_str << " repeats = " << repeats << "\n";
-            for(const auto& sort : sorts) {
-                // пропущены квадратичные сортировки на очень больших размерах
+            for(size_t q{0}; q < sorts.size(); ++q) {
+                const SortDescriptor& sort = sorts[q];
+                // пропуcкаем квадратичные сортировки на очень больших размерах
                 // чтобы не ждать часами.
                 bool is_quadratic = (sort.name == "bubble_sort" ||
                                      sort.name == "selection_sort" ||
