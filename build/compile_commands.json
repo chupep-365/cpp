@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/home/chupep/cpp/build",
+  "command": "/usr/bin/g++   -g -std=gnu++17 -o CMakeFiles/benchmark.dir/src/main.cpp.o -c /home/chupep/cpp/sortingAlgorithmsBenchmarkingPractice/src/main.cpp",
+  "file": "/home/chupep/cpp/sortingAlgorithmsBenchmarkingPractice/src/main.cpp",
+  "output": "CMakeFiles/benchmark.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/chupep/cpp/build",
+  "command": "/usr/bin/g++   -g -std=gnu++17 -o CMakeFiles/benchmark.dir/src/generator.cpp.o -c /home/chupep/cpp/sortingAlgorithmsBenchmarkingPractice/src/generator.cpp",
+  "file": "/home/chupep/cpp/sortingAlgorithmsBenchmarkingPractice/src/generator.cpp",
+  "output": "CMakeFiles/benchmark.dir/src/generator.cpp.o"
+},
+{
+  "directory": "/home/chupep/cpp/build",
+  "command": "/usr/bin/g++   -g -std=gnu++17 -o CMakeFiles/benchmark.dir/src/sorting_algorithms.cpp.o -c /home/chupep/cpp/sortingAlgorithmsBenchmarkingPractice/src/sorting_algorithms.cpp",
+  "file": "/home/chupep/cpp/sortingAlgorithmsBenchmarkingPractice/src/sorting_algorithms.cpp",
+  "output": "CMakeFiles/benchmark.dir/src/sorting_algorithms.cpp.o"
+},
+{
+  "directory": "/home/chupep/cpp/build",
+  "command": "/usr/bin/g++   -g -std=gnu++17 -o CMakeFiles/benchmark.dir/src/memory_tracker.cpp.o -c /home/chupep/cpp/sortingAlgorithmsBenchmarkingPractice/src/memory_tracker.cpp",
+  "file": "/home/chupep/cpp/sortingAlgorithmsBenchmarkingPractice/src/memory_tracker.cpp",
+  "output": "CMakeFiles/benchmark.dir/src/memory_tracker.cpp.o"
+}
+]
