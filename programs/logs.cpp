@@ -40,7 +40,8 @@ bool fails_comparator(std::pair<uint16_t, uint16_t>, std::pair<uint16_t, uint16_
 template <size_t N1>
 void top3_active(const std::vector<std::string>&, const std::string_view(&)[N1]);
 
-// activity_by_user
+template <size_t N1>
+void activity_by_user(const std::vector<std::string>&, const std::string_view(&)[N1], const std::string&);
 // activity_of_app
 
 
@@ -224,4 +225,32 @@ void top3_active(const std::vector<std::string>& logs, const std::string_view(&u
               << users[activity[0].second] << " - " << activity[0].first <<
               '\n' << "2) " << users[activity[1].second] << " - " << activity[1].first << '\n' << "3) " << 
               users[activity[2].second] << " - " << activity[2].first << '\n';
+}
+
+template <size_t users_amount>
+void activity_by_user(const std::vector<std::string>& logs, const std::string_view(&users)[users_amount],
+                      const std::string& username = "") {
+    if(username != "") {
+        bool is_true_user{false};
+        for(size_t i{}; i < users_amount; ++i) {
+            if(username == users[i]) {
+                is_true_user = true;
+                break;
+            }
+        }
+        if(!is_true_user) {
+            std::cout << "\nNo such user!\n";
+            activity_by_user(logs, users);
+            return;
+        }
+        // magic
+        activity_by_user(logs, users);
+        return;
+    }
+    std::cout << "Enter username to check the activity, or \"exit\" to stop checking users activity: ";
+    std::cin >> username;
+    if(usename == "exit") {
+        return;
+    }
+    
 }
