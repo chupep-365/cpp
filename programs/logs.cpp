@@ -6,6 +6,8 @@
 #include <random>
 #include <vector>
 #include <algorithm> 
+#include <iomanip>
+#include <map>
 
 struct Date_Time
 {
@@ -41,9 +43,10 @@ template <size_t N1>
 void top3_active(const std::vector<std::string>&, const std::string_view(&)[N1]);
 
 template <size_t N1>
-void activity_by_user(const std::vector<std::string>&, const std::string_view(&)[N1], const std::string&);
-// activity_of_app
+void activity_by_user(const std::vector<std::string>&, const std::string_view(&)[N1], std::string = {});
 
+std::string get_field(const std::string&, const uint8_t);
+void print_bar(const std::string&, uint32_t, uint32_t, uint32_t = 40);
 
 int main() { 
     constexpr uint32_t lower_time_border{1788220800}; // 1788220800 - 2026-09-01 00:00:00 UTC
@@ -66,6 +69,7 @@ int main() {
     fout.close();
     top3_unlucky(logs, users);
     top3_active(logs, users);
+    activity_by_user(logs, users);
 
     return 0;
 }
@@ -179,10 +183,9 @@ void top3_unlucky(const std::vector<std::string>& logs, const std::string_view(&
         fails[i].second = i;
     }
     for(size_t i{}; i < logs.size(); ++i) {
-        temp = logs[i].substr(logs[i].size() - 3, 3);
+        temp = get_field(logs[i], 3);
         if(atoi(temp.c_str()) >= 400) {
-            temp = logs[i].substr(26);
-            user = logs[i].substr(26, temp.find_first_of('|') - 1);
+            user = get_field(logs[i], 1);
             for(size_t j{}; j < users_amount; ++j) {
                 if(users[j] == user) {
                     ++fails[j].first;
@@ -204,15 +207,13 @@ bool fails_comparator(std::pair<uint16_t, uint16_t> a, std::pair<uint16_t, uint1
 
 template <size_t users_amount>
 void top3_active(const std::vector<std::string>& logs, const std::string_view(&users)[users_amount]) {
-    std::string temp{};
     std::string user{};
     std::pair<uint16_t, uint16_t> activity[users_amount]{};
     for(size_t i{}; i < users_amount; ++i) {
         activity[i].second = i;
     }
     for(size_t i{}; i < logs.size(); ++i) {
-        temp = logs[i].substr(26);
-        user = logs[i].substr(26, temp.find_first_of('|') - 1);
+        user = get_field(logs[i], 1);
         for(size_t j{}; j < users_amount; ++j) {
             if(users[j] == user) {
                 ++activity[j].first;
@@ -229,10 +230,17 @@ void top3_active(const std::vector<std::string>& logs, const std::string_view(&u
 
 template <size_t users_amount>
 void activity_by_user(const std::vector<std::string>& logs, const std::string_view(&users)[users_amount],
-                      const std::string& username = "") {
-    if(username != "") {
+                      std::string username) {
+    while(true) {
+        if(username.empty()) {
+            std::cout << "Enter username to check the activity, or \"exit\" to stop checking users activity: ";
+            std::cin >> username;
+        }
+        if(username == "exit") {
+            return;
+        }
         bool is_true_user{false};
-        for(size_t i{}; i < users_amount; ++i) {
+        for(size_t i{0}; i < users_amount; ++i) {
             if(username == users[i]) {
                 is_true_user = true;
                 break;
@@ -240,17 +248,77 @@ void activity_by_user(const std::vector<std::string>& logs, const std::string_vi
         }
         if(!is_true_user) {
             std::cout << "\nNo such user!\n";
-            activity_by_user(logs, users);
-            return;
+            username.clear();
+            continue;
         }
-        // magic
-        activity_by_user(logs, users);
+        std::map<std::string, uint64_t> operations_count;
+        uint64_t total_operations = 0;
+        uint64_t failed_operations = 0;
+        for(size_t i{0}; i < logs.size(); ++i) {
+            const std::string& log_line = logs[i];
+            if(get_field(log_line, 1) != username) {
+                continue;
+            }
+            ++total_operations;
+            const std::string operation = get_field(log_line, 2);
+            ++operations_count[operation];
+            const uint16_t code = atoi(get_field(log_line, 3).c_str());
+            if(code >= 400) {
+                ++failed_operations;
+            }
+        }
+        uint32_t max_count = 0;
+        for(std::map<std::string, uint64_t>::const_iterator item = operations_count.begin();
+            item != operations_count.end(); ++item) {
+            if(item->second > max_count) {
+                max_count = item->second;
+            }
+        }
+        std::cout << "\nActivity for user: " << username << '\n';
+        std::cout << "Total operations: " << total_operations << '\n';
+        std::cout << "Failed operations: " << failed_operations << "\n\n";
+        if(operations_count.empty()) {
+            std::cout << "No operations found for this user.\n";
+        } else {
+        for(std::map<std::string, uint64_t>::const_iterator item = operations_count.begin();
+            item != operations_count.end(); ++item) {
+            print_bar(item->first, item->second, max_count);
+            }
+        }
+        username.clear();
+    }
+}
+
+std::string get_field(const std::string& line, const uint8_t field_index) { // 0 - date
+    if(field_index > 3) {                                                  // 1 - name
+        return {};                                                         // 2 - op
+    }                                                                      // 3 - code
+    size_t start = 0;
+    size_t end = line.find(" | ");
+    uint8_t index = 0;
+    while(end != std::string::npos) {
+        if(index == field_index) {
+            return line.substr(start, end - start);
+        }
+        start = end + 3;
+        end = line.find(" | ", start);
+        ++index;
+    }
+    if(index == field_index) {
+        return line.substr(start);
+    }
+    return "";
+}
+
+void print_bar(const std::string& label, uint32_t value, uint32_t max_value, uint32_t bar_width) {
+    std::cout << std::left << std::setw(15) << label << " | ";
+    if(max_value == 0 || value == 0) {
+        std::cout << "0\n";
         return;
     }
-    std::cout << "Enter username to check the activity, or \"exit\" to stop checking users activity: ";
-    std::cin >> username;
-    if(usename == "exit") {
-        return;
+    uint32_t bar_length = (uint32_t)((value * bar_width + max_value - 1) / max_value);
+    for(uint32_t i{0}; i < bar_length; ++i) {
+        std::cout << '#';
     }
-    
+    std::cout << ' ' << value << '\n';
 }
