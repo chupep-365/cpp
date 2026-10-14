@@ -20,3 +20,10 @@ std::vector<uint8_t> decrypt(const std::vector<uint8_t>& text, const uint8_t* ke
     }
     return plain;
 }
+
+std::string to_utf8(const std::vector<uint8_t>& text) {
+    std::string plain{};
+    for(size_t i{}; i < text.size(); ++i) {
+        plain += ALPHABET[i];
+    }
+}
