@@ -9,8 +9,8 @@
 
 bool check_input_file(std::ifstream&);
 std::ifstream create_ifstream(const std::string);
-std::vector<std::string> read_file(std::ifstream&);
-void write_file(std::ofstream&, const std::vector<std::string>&);
+std::string read_file(std::ifstream&);
+void write_file(std::ofstream&, const std::string&);
 
 
 #endif

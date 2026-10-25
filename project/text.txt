@@ -1,0 +1,9 @@
+ ,.:;!?
+
+ Ivanov: 5, 6, 7!
+ Tuvalova: 10, 9, 8?
+ Arsen: 2, 3, 4.
+ Prokuror: 10, 10, 10
+ MSVC: 6, 7, 10.
+ Anton: 5, 2, 7,
+  

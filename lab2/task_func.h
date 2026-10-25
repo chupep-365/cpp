@@ -4,6 +4,13 @@
 #include <vector>
 #include <string>
 
-void swap_min_and_max(std::vector<std::string>&);
+
+struct Word {
+    size_t start;
+    size_t length;
+};
+
+bool is_not_delim(char);
+void swap_min_and_max(std::string&);
 
 #endif
